@@ -522,10 +522,29 @@
           card.className = "apartment-card";
 
           let mediaHTML = "";
-          if (apt.images && apt.images.length > 0) {
+
+          // لو الشقة فيها فيديو، اعرض الفيديو أولاً.
+          if (apt.videoUrl) {
             mediaHTML = `
               <div class="apartment-media">
-                  <iframe src="${apt.images[0]}" allowfullscreen></iframe>
+                <iframe
+                  src="${apt.videoUrl}"
+                  title="فيديو الشقة"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"
+                ></iframe>
+              </div>`;
+          } else if (apt.images && apt.images.length > 0 && apt.images[0]) {
+            mediaHTML = `
+              <div class="apartment-media">
+                <iframe
+                  src="${apt.images[0]}"
+                  title="صور الشقة"
+                  allow="fullscreen"
+                  allowfullscreen
+                  loading="lazy"
+                ></iframe>
               </div>`;
           }
 
