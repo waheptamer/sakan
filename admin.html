@@ -677,7 +677,6 @@
 
         if (input.value === ADMIN_PASSWORD) {
           lock.classList.add("hidden");
-          sessionStorage.setItem("admin_unlocked", "true");
           input.value = "";
           error.textContent = "";
         } else {
@@ -688,14 +687,9 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        const lock = document.getElementById("admin-lock");
-        if (sessionStorage.getItem("admin_unlocked") === "true") {
-          lock.classList.add("hidden");
-        } else {
-          setTimeout(() => {
-            document.getElementById("admin-password")?.focus();
-          }, 100);
-        }
+        setTimeout(() => {
+          document.getElementById("admin-password")?.focus();
+        }, 100);
       });
 
       // Theme Management
