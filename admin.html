@@ -364,9 +364,158 @@
           padding: 20px 15px;
         }
       }
+
+      /* --- Admin Lock Screen --- */
+      #admin-lock {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(0, 229, 255, 0.12),
+            transparent 35%
+          ),
+          radial-gradient(
+            circle at bottom,
+            rgba(124, 77, 255, 0.14),
+            transparent 40%
+          ),
+          #050816;
+        backdrop-filter: blur(18px);
+      }
+
+      #admin-lock.hidden {
+        display: none;
+      }
+
+      .lock-card {
+        width: min(420px, 100%);
+        padding: 35px 28px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+      }
+
+      .lock-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 30px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        box-shadow: 0 10px 30px rgba(0, 229, 255, 0.22);
+      }
+
+      .lock-card h2 {
+        margin-bottom: 8px;
+        font-size: 25px;
+        font-weight: 900;
+      }
+
+      .lock-card p {
+        margin-bottom: 24px;
+        opacity: 0.7;
+        font-size: 14px;
+      }
+
+      .lock-input {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 13px;
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        outline: none;
+        font-size: 16px;
+        text-align: center;
+        direction: ltr;
+        transition: var(--transition);
+      }
+
+      .lock-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 15px rgba(0, 229, 255, 0.18);
+      }
+
+      .lock-btn {
+        width: 100%;
+        margin-top: 14px;
+        padding: 14px;
+        border: none;
+        border-radius: 13px;
+        cursor: pointer;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 800;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        transition: var(--transition);
+      }
+
+      .lock-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 229, 255, 0.25);
+      }
+
+      .lock-error {
+        min-height: 22px;
+        margin-top: 12px;
+        color: #ff6b6b;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .lock-hint {
+        margin-top: 18px;
+        font-size: 11px;
+        opacity: 0.45;
+      }
     </style>
   </head>
   <body>
+    <!-- Admin Lock Screen -->
+    <div id="admin-lock">
+      <div class="lock-card">
+        <div class="lock-icon">🔐</div>
+        <h2>لوحة التحكم مقفولة</h2>
+        <p>اكتب كلمة المرور للدخول إلى لوحة إدارة سكن اللوتس</p>
+
+        <form id="lock-form" onsubmit="unlockAdmin(event)">
+          <input
+            id="admin-password"
+            class="lock-input"
+            type="password"
+            placeholder="كلمة المرور"
+            autocomplete="off"
+            required
+          />
+          <button type="submit" class="lock-btn">دخول 🔓</button>
+          <div id="lock-error" class="lock-error"></div>
+        </form>
+
+        <div class="lock-hint">لوحة تحكم سكن اللوتس</div>
+      </div>
+    </div>
+
     <div class="admin-header">
       <div class="admin-top-bar">
         <h1>لوحة التحكم ⚙️</h1>
@@ -516,6 +665,39 @@
     </div>
 
     <script>
+      // Admin Password Lock
+      const ADMIN_PASSWORD = "LUM2026";
+
+      function unlockAdmin(event) {
+        event.preventDefault();
+
+        const input = document.getElementById("admin-password");
+        const error = document.getElementById("lock-error");
+        const lock = document.getElementById("admin-lock");
+
+        if (input.value === ADMIN_PASSWORD) {
+          lock.classList.add("hidden");
+          sessionStorage.setItem("admin_unlocked", "true");
+          input.value = "";
+          error.textContent = "";
+        } else {
+          error.textContent = "كلمة المرور غير صحيحة ❌";
+          input.value = "";
+          input.focus();
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const lock = document.getElementById("admin-lock");
+        if (sessionStorage.getItem("admin_unlocked") === "true") {
+          lock.classList.add("hidden");
+        } else {
+          setTimeout(() => {
+            document.getElementById("admin-password")?.focus();
+          }, 100);
+        }
+      });
+
       // Theme Management
       function toggleTheme() {
         const currentTheme =
